@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
+class MicropostsTest < ActionDispatch::IntegrationTest
   include SessionsHelper
   def setup
     @user = users(:chinhnhan)
@@ -8,7 +8,7 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
 
   test "micropost interface" do
     log_in_as(@user, password: '123456')
-    get root_path
+    get user_path(@user)
 
     assert_select 'div.pagination'
 
@@ -23,7 +23,8 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
     assert_difference 'Micropost.count', 1 do
       post microposts_path, micropost: { content: content }
     end
-    assert_redirected_to root_url
+
+    assert_redirected_to user_path(@user)
     follow_redirect!
     assert_match content, response.body
 
@@ -36,7 +37,6 @@ class MicropostsInterfaceTest < ActionDispatch::IntegrationTest
 
     # Visit a different user.
     get user_path(users(:archer))
-    # assert_select 'a', text: 'delete', count: 0
     follow_redirect!
     assert_template 'static_pages/home'
   end

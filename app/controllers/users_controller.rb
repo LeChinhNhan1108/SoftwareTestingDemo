@@ -9,7 +9,8 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    @microposts = @user.microposts.paginate(page: params[:page], per_page: 3)
+    @feed_items = @user.microposts.paginate(page: params[:page], per_page: 3)
+    @micropost = @user.microposts.build if logged_in?
   end
 
   def new
