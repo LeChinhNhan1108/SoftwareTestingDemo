@@ -1,4 +1,7 @@
 require 'test_helper'
+# noinspection ALL
+
+# Test the micropost module
 
 class MicropostsTest < ActionDispatch::IntegrationTest
   include SessionsHelper
@@ -6,24 +9,27 @@ class MicropostsTest < ActionDispatch::IntegrationTest
     @user = users(:chinhnhan)
   end
 
-  test "micropost interface" do
+  test 'micropost interface' do
+    # Login a user
     log_in_as(@user, password: '123456')
+
+    # Visit user/:id
     get user_path(@user)
 
+    # Make sure the page has pagination for feed
     assert_select 'div.pagination'
 
-    # Invalid submission
+    # Invalid submission, number of micropost does not increase
     assert_no_difference 'Micropost.count' do
-      post microposts_path, micropost: { content: "" }
+      post microposts_path, micropost: { content: ''}
     end
     assert_select 'div#error_explanation'
 
-    # Valid submission
-    content = "This micropost really ties the room together"
+    # Valid submission, number of micropost will increase by 1
+    content = 'This micropost really ties the room together'
     assert_difference 'Micropost.count', 1 do
       post microposts_path, micropost: { content: content }
     end
-
     assert_redirected_to user_path(@user)
     follow_redirect!
     assert_match content, response.body
